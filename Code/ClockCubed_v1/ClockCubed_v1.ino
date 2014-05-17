@@ -114,7 +114,7 @@ void setup(){
   Wire.begin();
   accelInit();
   clockInit();
-  //setTime(22,23,00,3,5,7,14);
+  //setTime(17,32,00,6,5,16,14);
   delay(1000);
   calPot = analogRead(POT);
   //calPot = 512;
@@ -140,10 +140,13 @@ void loop(){
   if((lastMode == 6) && (mode != 6)){
     alarmFlag = 0x00;
   }
+  if((lastMode != 1) && (mode == 1)){
+    calPot = analogRead(POT);
+  }
   
   switch (mode){     
     case 1:                 //right viewed from front, potentiomenter      
-      for(int i=7; i>=0; i--){    
+      /*for(int i=7; i>=0; i--){    
         if(i==0) achar = 0x07;
         else achar = colors[i-1];
         if(val>calPot){
@@ -180,12 +183,17 @@ void loop(){
             column(~(0xFF>>temp),7-i,achar);
           }
         }
-      }
+      }*/
       
-      //character((val/1000)%10,0,0x01,4);
-      //character((val/100)%10,4,0x01,4);
-      //character((val/10)%10,8,0x01,4);
-      //character((val/1)%10,12,0x01,4);
+      if(month > 9) character1(month/10,0,0x02,4);
+      character1(month%10,4,0x02,4);
+      character1(day/10,8,0x02,4);
+      character1(day%10,12,0x02,4);
+      
+      //character1((val/1000)%10,0,0x01,4);
+      //character1((val/100)%10,4,0x01,4);
+      //character1((val/10)%10,8,0x01,4);
+      //character1((val/1)%10,12,0x01,4);
       //400-340 min
       //600-660 max
       //520 neutral
@@ -193,28 +201,21 @@ void loop(){
         
       
       break;
-    case 2:                 //left viewed from front, binary
-      color = 0x02;
+    case 2:                 //left viewed from front, binary, RPI      
+      //column(seconds%10,7,colors[0]);
+      //column(seconds/10,6,colors[1]);
+      //column(minutes%10,5,colors[2]);
+      //column(minutes/10,4,colors[3]);
+      //column(hours%10,3,colors[4]);
+      //column(hours/10,2,colors[5]);
       
-      /*if(month/10%10 != 0)                   //date
-        character(month/10%10, 0, color, 4);
-      character(month/1%10, 4, color, 4);
-      character(day/10%10, 8, color, 4);
-      character(day/1%10, 12, color, 4);*/
+      character(27, 8, WHITE, 4);      //R
+      character(25, 11, RED, 4);       //P
+      character(18, 13, WHITE, 4);     //I
       
-      column(seconds%10,15,colors[0]);
-      column(seconds/10,14,colors[1]);
-      column(minutes%10,13,colors[2]);
-      column(minutes/10,12,colors[3]);
-      column(hours%10,11,colors[4]);
-      column(hours/10,10,colors[5]);
-      
-      column(seconds%10,7,colors[0]);
-      column(seconds/10,6,colors[1]);
-      column(minutes%10,5,colors[2]);
-      column(minutes/10,4,colors[3]);
-      column(hours%10,3,colors[4]);
-      column(hours/10,2,colors[5]);
+      character(25, 0, TEAL, 4);      //P
+      character(13, 3, MAGENTA, 4);     //D
+      character(18, 5, YELLOW, 4);        //I
       
       break;
     case 5:                 //upside down, time, alarm set
@@ -226,33 +227,12 @@ void loop(){
         //520 neutral
       
         if(val > calPot+80){
-          alarmSec -= (val-calPot-80)*10;
+          alarmSec -= (val-calPot-80)*5;
         }
         
         if(val < calPot-120){
-          alarmSec += (calPot-val-120)*10;
+          alarmSec += (calPot-val-120)*5;
         }
-        /*
-        if(val > calPot+20){
-          if((val-calPot) > 88)
-            alarmMin -= 60;
-          else if(((val-calPot) > 60) && ((val-calPot) < 87))
-            alarmMin -= 10;
-          else if(((val-calPot) > 40) && ((val-calPot) < 59))
-            alarmSec -= 30;
-          else if(((val-calPot) > 20) && ((val-calPot) < 39))
-            alarmSec -= 10;
-        }
-        if(val < calPot-20){
-          if((calPot-val) > 88)
-            alarmMin += 60;
-          else if(((calPot-val) > 60) && ((calPot-val) < 87))
-            alarmMin += 10;
-          else if(((calPot-val) > 40) && ((calPot-val) < 59))
-            alarmSec += 30;
-          else if(((calPot-val) > 20) && ((calPot-val) < 39))
-            alarmSec += 10;
-        }*/
         
         while(alarmSec >= 60){
           alarmSec -= 60;
@@ -280,10 +260,10 @@ void loop(){
       
       color = 0x04;
       if(alarmHour/10 != 0) 
-        character(alarmHour/10, 0, color, 4);
-      character(alarmHour%10, 4, color, 4);
-      character(alarmMin/10, 8, color, 4);
-      character(alarmMin%10, 12, color, 4);
+        character1(alarmHour/10, 0, color, 4);
+      character1(alarmHour%10, 4, color, 4);
+      character1(alarmMin/10, 8, color, 4);
+      character1(alarmMin%10, 12, color, 4);
       break;
     case 6:                 //upright, normal, time set
       color = 0x06;
@@ -296,7 +276,7 @@ void loop(){
         //520 neutral
       
         if(val > calPot+80){
-          seconds -= (calPot-val-120)*10;
+          seconds -= (calPot-val-80)*10;
           
           while(seconds < 0){
             seconds += 60;
@@ -309,11 +289,11 @@ void loop(){
           if(hours < 0){
             hours = 23;
           }
-          setTime(hours,minutes,00,dow,month,day,year);
+          setTime(hours,minutes,seconds,dow,month,day,year);
         }
         
         if(val < calPot-120){
-          seconds += (val-calPot-80)*10;          
+          seconds += (val-calPot-120)*10;          
           
           while(seconds >= 60){
             seconds -= 60;
@@ -326,42 +306,42 @@ void loop(){
           if(hours >= 24){
             hours = 0;
           }
-          setTime(hours,minutes,00,dow,month,day,year);
+          setTime(hours,minutes,seconds,dow,month,day,year);
         }
       }
       
       if(alarmFlag && seconds%2){
         for(int i=0; i<16; i++) column(0x80,i,0x05);
         if(hours/10 != 0){
-          character(hours/10, 0, OFF, 4);
-          character(hours/10, 0, color, 4);
+          character1(hours/10, 0, OFF, 4);
+          character1(hours/10, 0, color, 4);
         }
-        character(hours%10, 4, OFF, 4);
-        character(minutes/10, 8, OFF, 4);
-        character(minutes%10, 12, OFF, 4);
-        character(hours%10, 4, color, 4);
-        character(minutes/10, 8, color, 4);
-        character(minutes%10, 12, color, 4);
+        character1(hours%10, 4, OFF, 4);
+        character1(minutes/10, 8, OFF, 4);
+        character1(minutes%10, 12, OFF, 4);
+        character1(hours%10, 4, color, 4);
+        character1(minutes/10, 8, color, 4);
+        character1(minutes%10, 12, color, 4);
       }
       else if(alarmFlag && (seconds+1)%2){
         //for(int i=0; i<16; i++) column(0x80,i,0x04);
         if(hours/10 != 0){
-          character(hours/10, 0, OFF, 4);
-          character(hours/10, 0, color, 4);
+          character1(hours/10, 0, OFF, 4);
+          character1(hours/10, 0, color, 4);
         }
-        character(hours%10, 4, OFF, 4);
-        character(minutes/10, 8, OFF, 4);
-        character(minutes%10, 12, OFF, 4);
-        character(hours%10, 4, color, 4);
-        character(minutes/10, 8, color, 4);
-        character(minutes%10, 12, color, 4);
+        character1(hours%10, 4, OFF, 4);
+        character1(minutes/10, 8, OFF, 4);
+        character1(minutes%10, 12, OFF, 4);
+        character1(hours%10, 4, color, 4);
+        character1(minutes/10, 8, color, 4);
+        character1(minutes%10, 12, color, 4);
       }
       else{
         if(hours/10 != 0) 
-          character(hours/10, 0, color, 4);
-        character(hours%10, 4, color, 4);
-        character(minutes/10, 8, color, 4);
-        character(minutes%10, 12, color, 4);
+          character1(hours/10, 0, color, 4);
+        character1(hours%10, 4, color, 4);
+        character1(minutes/10, 8, color, 4);
+        character1(minutes%10, 12, color, 4);
       }
       break;
     default:                //unknkown
@@ -522,7 +502,6 @@ void updateSensors(){
     
     if(tiltReg & 0x80){
       Serial.print("SHAKE ");
-      calPot = analogRead(POT);
     }
     else Serial.print("      ");
     if(tapFlag){
@@ -559,6 +538,11 @@ void updateSensors(){
       awake = 1;
     }
     
+    if(alarmFlag){
+      awake = 1;
+      awakeSec = 0;
+    }
+    
     if(awakeSec > 20){
       awake = 0;
       //fadeLevel = 0;
@@ -575,6 +559,36 @@ void updateSensors(){
 //   be added to the font pack to help with automation.
 
 void character(char num, char pos, char color, char width){
+  //color: 0-off 1-red 2-green 3-yellow 4-blue 5-magenta 6-cyan 7-white
+  //pos: 0-15
+  //num: character index in the font pack
+  //width: width of character, typically 3 or 4, not counting 0
+  
+  if(color & 0x01){    //red on
+    for(int i=0; i<width; i++){
+      redFrame[pos/8][pos%8+i] &= ~font[num][i];
+    }
+  }
+  if(color & 0x02){    //green on
+    for(int i=0; i<width; i++){
+      greenFrame[pos/8][pos%8+i] &= ~font[num][i];
+    }
+  }
+  if(color & 0x04){    //blue on
+    for(int i=0; i<width; i++){
+      blueFrame[pos/8][pos%8+i] &= ~font[num][i];
+    }
+  }
+  if(color == 0){      //off
+    for(int i=0; i<width; i++){
+      redFrame[pos/8][pos%8+i] |= font[num][i];
+      greenFrame[pos/8][pos%8+i] |= font[num][i];
+      blueFrame[pos/8][pos%8+i] |= font[num][i];
+    }
+  }
+}
+
+void character1(char num, char pos, char color, char width){
   //color: 0-off 1-red 2-green 3-yellow 4-blue 5-magenta 6-cyan 7-white
   //pos: 0-15
   //num: character index in the font pack
@@ -600,6 +614,36 @@ void character(char num, char pos, char color, char width){
       redFrame[pos/8][pos%8+i] |= font1[num][i];
       greenFrame[pos/8][pos%8+i] |= font1[num][i];
       blueFrame[pos/8][pos%8+i] |= font1[num][i];
+    }
+  }
+}
+
+void character2(char num, char pos, char color, char width){
+  //color: 0-off 1-red 2-green 3-yellow 4-blue 5-magenta 6-cyan 7-white
+  //pos: 0-15
+  //num: character index in the font pack
+  //width: width of character, typically 3 or 4, not counting 0
+  
+  if(color & 0x01){    //red on
+    for(int i=0; i<width; i++){
+      redFrame[pos/8][pos%8+i] &= ~font2[num][i];
+    }
+  }
+  if(color & 0x02){    //green on
+    for(int i=0; i<width; i++){
+      greenFrame[pos/8][pos%8+i] &= ~font2[num][i];
+    }
+  }
+  if(color & 0x04){    //blue on
+    for(int i=0; i<width; i++){
+      blueFrame[pos/8][pos%8+i] &= ~font2[num][i];
+    }
+  }
+  if(color == 0){      //off
+    for(int i=0; i<width; i++){
+      redFrame[pos/8][pos%8+i] |= font2[num][i];
+      greenFrame[pos/8][pos%8+i] |= font2[num][i];
+      blueFrame[pos/8][pos%8+i] |= font2[num][i];
     }
   }
 }

@@ -129,7 +129,7 @@ char font2[62][4] = {              //4x7 font top aligned (uppercase 4x7)
 
 
 
-char font1[62][4] = {              //4x7 font base asigned
+char font1[62][4] = {              //4x7 font base aligned (uppercase 4x7)
   0x3E, 0x51, 0x49, 0x3E,   //0
   0x00, 0x21, 0x7F, 0x01,   //1
   0x06, 0x49, 0x49, 0x30,   //2
