@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.5.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -12230,6 +12230,12 @@ Standard 0603 ceramic capacitor, and 0.1" leaded capacitor.</description>
 <text x="116.84" y="205.74" size="1.778" layer="91">is wrong</text>
 <text x="149.86" y="294.894" size="1.778" layer="97">UVLO 2.6V</text>
 <text x="131.572" y="317.754" size="1.778" layer="97">*close jumper SJ2 to disable UVLO*</text>
+<text x="297.18" y="304.8" size="3.81" layer="91">Clock Cubed V1</text>
+<text x="297.18" y="297.18" size="3.81" layer="91">Copyright (c) 2014, Kevin Baker and Lucas Lappe</text>
+<text x="297.18" y="289.56" size="3.81" layer="91">All Rights Reserved</text>
+<text x="297.18" y="281.94" size="3.81" layer="91">Licensed under BSD</text>
+<text x="236.22" y="-50.8" size="3.81" layer="91">PNP, not NPN</text>
+<text x="345.44" y="-53.34" size="3.81" layer="91">PNP, not NPN</text>
 </plain>
 <instances>
 <instance part="J1" gate="G$1" x="314.96" y="190.5"/>
